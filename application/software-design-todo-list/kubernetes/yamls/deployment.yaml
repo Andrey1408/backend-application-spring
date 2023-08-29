@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: todo-list
+  template:
+    metadata:
+      labels:
+        app: todo-list
+    spec:
+      containers:
+        - image: software-design-todo-list:1.0.0-SNAPSHOT
+          name: software-design-todo-list
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_SERVICE_HOST
+              value: "postgres-service"
+            - name: POSTGRES_SERVICE_PORT
+              value: "5432"
+            - name: POSTGRES_DB_NAME
+              value: "postgres"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list-service
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: todo-list
+  type: LoadBalancer
